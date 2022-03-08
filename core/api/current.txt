@@ -10680,6 +10680,7 @@ package android.content {
     field public static final String RESTRICTIONS_SERVICE = "restrictions";
     field public static final String ROLE_SERVICE = "role";
     field public static final String SEARCH_SERVICE = "search";
+    field public static final String SECURITY_CONF_HISTORY_READER_SERVICE = "security_conf_history_reader";
     field public static final String SENSOR_SERVICE = "sensor";
     field public static final String SHORTCUT_SERVICE = "shortcut";
     field public static final String STORAGE_SERVICE = "storage";
@@ -37300,6 +37301,11 @@ package android.security {
     method public boolean isCleartextTrafficPermitted(String);
   }
 
+  public class SecurityConfigurationHistoryManager {
+    method @NonNull public java.util.List<android.security.securityconfhistory.SecurityConfigurationEvent> listEvents();
+    method @NonNull public android.security.securityconfhistory.GrantRuntimePermissionEvent test();
+  }
+
 }
 
 package android.security.identity {
@@ -37683,6 +37689,70 @@ package android.security.keystore {
     method public String getTransformation();
     method public byte[] getWrappedKeyBytes();
     method public String getWrappingKeyAlias();
+  }
+
+}
+
+package android.security.securityconfhistory {
+
+  public final class GrantRuntimePermissionEvent implements android.security.securityconfhistory.SecurityConfigurationEvent {
+    ctor public GrantRuntimePermissionEvent(@NonNull String, @NonNull String, int, long);
+    ctor public GrantRuntimePermissionEvent(@NonNull String);
+    method @NonNull public String getDescription(@NonNull android.content.pm.PackageManager);
+    method @NonNull public String getEventName();
+    method @NonNull public String getPackageName();
+    method @NonNull public String getPermissionName();
+    method @NonNull public String getReason();
+    method public long getTime();
+    method public int getType();
+    method public int getUserId();
+    method @NonNull public String serialize();
+  }
+
+  public final class RevokeRuntimePermissionEvent implements android.security.securityconfhistory.SecurityConfigurationEvent {
+    ctor public RevokeRuntimePermissionEvent(@NonNull String, @NonNull String, int, @NonNull String, long);
+    ctor public RevokeRuntimePermissionEvent(@NonNull String);
+    method @NonNull public String getDescription(@NonNull android.content.pm.PackageManager);
+    method @NonNull public String getEventName();
+    method @NonNull public String getPackageName();
+    method @NonNull public String getPermissionName();
+    method @NonNull public String getReason();
+    method public long getTime();
+    method public int getType();
+    method public int getUserId();
+    method @NonNull public String serialize();
+  }
+
+  public interface SecurityConfigurationEvent {
+    method @NonNull public String getDescription(@NonNull android.content.pm.PackageManager);
+    method @NonNull public String getEventName();
+    method @NonNull public String getPackageName();
+    method @NonNull public String getPermissionName();
+    method @NonNull public String getReason();
+    method public long getTime();
+    method public int getType();
+    method public int getUserId();
+    method @NonNull public String serialize();
+    field public static final int GRANT_RUNTIME_CONFIGURATION_EVENT = 1; // 0x1
+    field public static final int REVOKE_RUNTIME_CONFIGURATION_EVENT = 2; // 0x2
+    field public static final String SEPARATOR = "##";
+  }
+
+  public final class SecurityConfigurationEventDescription implements android.os.Parcelable {
+    ctor public SecurityConfigurationEventDescription(@NonNull String, @NonNull String, int, long, @NonNull String, int);
+    method public int describeContents();
+    method public int getEventType();
+    method @NonNull public String getPackageName();
+    method @NonNull public String getPermissionName();
+    method @NonNull public String getReason();
+    method public long getTime();
+    method public int getUserId();
+    method public void readFromParcel(@NonNull android.os.Parcel);
+    method public void writeToParcel(@NonNull android.os.Parcel, int);
+    field @NonNull public static final android.os.Parcelable.Creator<android.security.securityconfhistory.SecurityConfigurationEventDescription> CREATOR;
+    field public static final int GRANT_PERMISSION_EVENT = 1; // 0x1
+    field public static final int REVOKE_PERMISSION_EVENT = 2; // 0x2
+    field public static final int UNKNOWN_EVENT = -1; // 0xffffffff
   }
 
 }

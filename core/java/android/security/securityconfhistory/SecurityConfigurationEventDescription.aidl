@@ -1,0 +1,2 @@
+package android.security.securityconfhistory;
+parcelable SecurityConfigurationEventDescription;

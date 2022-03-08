@@ -185,6 +185,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 
+import android.security.securityconfhistory.ISecurityConfigurationHistoryService;
+import android.security.securityconfhistory.ISecurityConfigurationHistoryReaderService;
+import android.os.ServiceManager.ServiceNotFoundException;
+
 /**
  * Manages all permissions and handles permissions related tasks.
  */
@@ -1451,6 +1455,18 @@ public class PermissionManagerService extends IPermissionManager.Stub {
             return;
         }
 
+        // XXXXX
+        Log.d(TAG, "*** Grant RuntimePermission :" + permName + " to package " + packageName);
+        
+        // XXXXX
+        ISecurityConfigurationHistoryService mSecurityHistory = ISecurityConfigurationHistoryService.Stub.asInterface(
+            ServiceManager.getService(Context.SECURITY_CONF_HISTORY_SERVICE));         
+        
+        // XXXXX
+        if (mSecurityHistory == null) {
+            Log.d(TAG, "*** Grant RuntimePermission : mSecurityHistory is null");
+        }
+        
         mContext.enforceCallingOrSelfPermission(
                 android.Manifest.permission.GRANT_RUNTIME_PERMISSIONS,
                 "grantRuntimePermission");
@@ -1581,6 +1597,16 @@ public class PermissionManagerService extends IPermissionManager.Stub {
             }
         }
 
+        // XXXX
+        final long token = Binder.clearCallingIdentity();
+        try {            
+            mSecurityHistory.runtimePermissionGranted(packageName, permName, userId);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Unable to register runtime permission grant in security conf history.", e);
+        } finally {
+            Binder.restoreCallingIdentity(token);
+        }   
+        
         if (isRuntimePermission) {
             logPermission(MetricsEvent.ACTION_PERMISSION_GRANTED, permName, packageName);
         }
@@ -1600,6 +1626,7 @@ public class PermissionManagerService extends IPermissionManager.Stub {
         if (isRuntimePermission) {
             notifyRuntimePermissionStateChanged(packageName, userId);
         }
+       
     }
 
     @Override
@@ -1629,6 +1656,10 @@ public class PermissionManagerService extends IPermissionManager.Stub {
             return;
         }
 
+        // XXXXX
+        ISecurityConfigurationHistoryService mSecurityHistory = ISecurityConfigurationHistoryService.Stub.asInterface(
+            ServiceManager.getService(Context.SECURITY_CONF_HISTORY_SERVICE));        
+        
         mContext.enforceCallingOrSelfPermission(
                 android.Manifest.permission.REVOKE_RUNTIME_PERMISSIONS,
                 "revokeRuntimePermission");
@@ -1721,6 +1752,16 @@ public class PermissionManagerService extends IPermissionManager.Stub {
             }
         }
 
+        // XXXX
+        final long token = Binder.clearCallingIdentity();
+        try {            
+            mSecurityHistory.runtimePermissionRevoked(permName, packageName, userId, reason);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Unable to register runtime permission revocation in security conf history.", e);
+        } finally {
+            Binder.restoreCallingIdentity(token);
+        }         
+        
         if (isRuntimePermission) {
             logPermission(MetricsEvent.ACTION_PERMISSION_REVOKED, permName, packageName);
         }

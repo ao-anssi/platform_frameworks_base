@@ -237,6 +237,10 @@ import com.android.internal.util.Preconditions;
 import java.util.Map;
 import java.util.Objects;
 
+import android.security.SecurityConfigurationHistoryManager;
+import android.security.securityconfhistory.ISecurityConfigurationHistoryReaderService;
+
+
 /**
  * Manages all of the system services that can be returned by {@link Context#getSystemService}.
  * Used by {@link ContextImpl}.
@@ -1470,6 +1474,32 @@ public final class SystemServiceRegistry {
                         return new DisplayHashManager();
                     }});
 
+        registerService(Context.SECURITY_CONF_HISTORY_READER_SERVICE, SecurityConfigurationHistoryManager.class,
+                new StaticServiceFetcher<SecurityConfigurationHistoryManager>() {
+                    @Override
+                    public SecurityConfigurationHistoryManager createService()
+                            throws ServiceNotFoundException {
+                            
+                        Log.d(TAG, "**** create Security History Reader Service Manager");
+                                       
+                        // check the service
+                        IBinder check = ServiceManager.checkService(Context.SECURITY_CONF_HISTORY_READER_SERVICE);
+                        
+                        if (check == null) {
+                            Log.d(TAG, "**** check fail for Security History Reader Service Manager");
+                        } else {
+                            Log.d(TAG, "**** check success for Security History Reader Service Manager");
+                        }                                            
+                        
+                        IBinder b = ServiceManager.getServiceOrThrow(Context.SECURITY_CONF_HISTORY_READER_SERVICE);
+                        
+                        if (b == null) {
+                            Log.d(TAG, "**** History Reader Service Interface IBinder is null");                        
+                        }
+                        
+                        return new SecurityConfigurationHistoryManager(ISecurityConfigurationHistoryReaderService.Stub.asInterface(b));
+                    }});                    
+                    
         sInitializing = true;
         try {
             // Note: the following functions need to be @SystemApis, once they become mainline

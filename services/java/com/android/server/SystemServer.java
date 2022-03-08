@@ -204,6 +204,9 @@ import com.android.server.wm.ActivityTaskManagerService;
 import com.android.server.wm.WindowManagerGlobalLock;
 import com.android.server.wm.WindowManagerService;
 
+import com.android.server.security.SecurityConfigurationHistoryService;
+import com.android.server.security.SecurityConfigurationHistoryReaderService;
+
 import dalvik.system.VMRuntime;
 
 import com.google.android.startop.iorap.IorapForwardingService;
@@ -1573,6 +1576,54 @@ public final class SystemServer implements Dumpable {
             throw e;
         }
 
+        
+        // XXX
+        try {    
+            // XXX
+            // Slog.d("System", "***** Systemserver debug pid = "+String.valueOf(android.os.Process.myPid()));            
+            // try {
+            //    Thread.sleep(60 * 1000);
+            // } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+            //     e.printStackTrace();
+            // }          
+            // Slog.d("System", "***** Systemserver debug resumed");  
+                
+            t.traceBegin("StartSecurityConfigurationHistoryService");        
+            SecurityConfigurationHistoryService secService = new SecurityConfigurationHistoryService(context);
+            ServiceManager.addService(Context.SECURITY_CONF_HISTORY_SERVICE, secService);            
+            t.traceEnd();
+        } catch(Throwable e) {
+            Slog.e("System", "******************************************");
+            Slog.e("System", "************ Failure starting Security Configuration History Service");
+            Slog.e("System", "************ SystemServer exception", e);
+            // throw e;
+        }        
+        
+        // XXX
+        try {    
+            // XXX
+            // Slog.d("System", "***** Systemserver debug pid = "+String.valueOf(android.os.Process.myPid()));            
+            // try {
+            //    Thread.sleep(60 * 1000);
+            // } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+            //     e.printStackTrace();
+            // }          
+            // Slog.d("System", "***** Systemserver debug resumed");  
+                
+            t.traceBegin("StartSecurityConfigurationHistoryReaderService");        
+            SecurityConfigurationHistoryReaderService secrReaderService = new SecurityConfigurationHistoryReaderService(context);
+            ServiceManager.addService(Context.SECURITY_CONF_HISTORY_READER_SERVICE, secrReaderService);            
+            t.traceEnd();
+        } catch(Throwable e) {
+            Slog.e("System", "******************************************");
+            Slog.e("System", "************ Failure starting Security Configuration HistoryReader  Service");
+            Slog.e("System", "************ SystemServer exception", e);
+            // throw e;
+        }          
+        
+        
         // Before things start rolling, be sure we have decided whether
         // we are in safe mode.
         final boolean safeMode = wm.detectSafeMode();

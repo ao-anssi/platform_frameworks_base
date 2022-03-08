@@ -123,6 +123,8 @@ import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import android.security.securityconfhistory.ISecurityConfigurationHistoryService;
+
 /**
  * Helper class for {@link ActivityManagerService} responsible for multi-user functionality.
  *
@@ -787,6 +789,20 @@ class UserController implements Handler.Callback {
                     getTemporaryAppAllowlistBroadcastOptions(REASON_BOOT_COMPLETED).toBundle(),
                     true, false, MY_PID, SYSTEM_UID, callingUid, callingPid, userId);
         });
+        
+        // XXX
+        ISecurityConfigurationHistoryService mSecurityHistory = ISecurityConfigurationHistoryService.Stub.asInterface(
+            ServiceManager.getService(Context.SECURITY_CONF_HISTORY_SERVICE));         
+        
+        // final long token = Binder.clearCallingIdentity();
+        try {            
+            mSecurityHistory.startRecording();
+        } catch (RemoteException e) {
+            Slogf.e(TAG, "Unable to start SecurityHistory recording.", e);
+        } finally {
+            // Binder.restoreCallingIdentity(token);
+        }        
+
     }
 
     int restartUser(final int userId, final boolean foreground) {

@@ -3587,6 +3587,8 @@ public abstract class Context {
 
     /** @hide */
     @StringDef(suffix = { "_SERVICE" }, value = {
+            //@hide: SECURITY_CONF_HISTORY_SERVICE
+            SECURITY_CONF_HISTORY_READER_SERVICE,
             POWER_SERVICE,
             //@hide: POWER_STATS_SERVICE,
             WINDOW_SERVICE,
@@ -3940,6 +3942,17 @@ public abstract class Context {
      */
     public abstract @Nullable String getSystemServiceName(@NonNull Class<?> serviceClass);
 
+    
+    /**
+    * @hide
+    */
+    public static final String SECURITY_CONF_HISTORY_SERVICE = "security_conf_history";
+    
+    /**
+    * Read security events history
+    */
+    public static final String SECURITY_CONF_HISTORY_READER_SERVICE = "security_conf_history_reader";    
+    
     /**
      * Use with {@link #getSystemService(String)} to retrieve a
      * {@link android.os.PowerManager} for controlling power management,
